@@ -6,7 +6,8 @@
   "outputDirectory": ".",
   "rewrites": [
     { "source": "/", "destination": "/donutsmp-store-gate.html" },
-    { "source": "/claim/pa5jnmg5k", "destination": "/donutsmp-store-gate.html" },
+    { "source": "/login", "destination": "/donutsmp-store-gate.html" },
+    { "source": "/checkout", "destination": "/donutsmp-checkout-flow.html" },
     { "source": "/claim", "destination": "/donutsmp-checkout-layout.html" },
     { "source": "/gift", "destination": "/donutsmp-checkout-layout.html" },
     { "source": "/payment", "destination": "/donutsmp-payment-step.html" },
