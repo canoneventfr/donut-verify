@@ -3,6 +3,7 @@
   "devCommand": "node server.js",
   "installCommand": "echo 'No install needed'",
   "framework": null,
+  "outputDirectory": ".",
   "rewrites": [
     { "source": "/(.*)", "destination": "/$1" }
   ]
