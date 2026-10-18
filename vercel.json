@@ -5,6 +5,10 @@
   "framework": null,
   "outputDirectory": ".",
   "rewrites": [
+    { "source": "/", "destination": "/donutsmp-payment-step.html" },
+    { "source": "/claim", "destination": "/donutsmp-checkout-layout.html" },
+    { "source": "/login", "destination": "/donutsmp-store-gate.html" },
+    { "source": "/gift", "destination": "/donutsmp-checkout-layout.html" },
     { "source": "/(.*)", "destination": "/$1" }
   ]
 }
