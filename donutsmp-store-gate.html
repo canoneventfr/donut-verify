@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<!-- Static layout mockup for internal design review.
+     Structure and values read from the live page's computed styles + DOM shape.
+     No payment fields, no redeem keys, no scripts, nothing posts anywhere. -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Donut SMP | Store</title>
+    <meta name="theme-color" content="#FF69B4">
+    <link rel="shortcut icon" href="https://website.donutsmp.org/bcGCsev.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+
+    <style>
+        html { font-size: 10px; background: #111111; overscroll-behavior-y: none; }
+
+        @font-face {
+            font-family: "MC";
+            src: url("https://cdn.jsdelivr.net/gh/IdreesInc/Minecraft-Font@v1.0/Minecraft.otf") format("opentype");
+            font-display: swap;
+            font-weight: 400;
+        }
+        @font-face {
+            font-family: "MC";
+            src: url("https://cdn.jsdelivr.net/gh/IdreesInc/Minecraft-Font@v1.0/Minecraft-Bold.otf") format("opentype");
+            font-display: swap;
+            font-weight: 700;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background: #fff;
+            color: silver;
+            font-family: 'proxima-nova', sans-serif;
+            font-size: 14px;
+            line-height: normal;
+        }
+
+        .page-wrapper {
+            display: flex;
+            flex-direction: column;
+            background: #111111;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        .main-content { flex: 1; }
+
+        /* ===== HEAD ===== */
+        .head {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 104px 0 49px;
+        }
+
+        .logo { max-width: 124px; margin: 0 auto; }
+        .logo img {
+            width: 64px;
+            height: 64px;
+            max-width: 100%;
+            display: inline;
+            vertical-align: middle;
+            border-radius: 50%;
+            box-shadow: 0 0 40px rgba(46, 156, 255, 0.15);
+            /* source is 500x500 and rendered at 64px — auto lets the browser downscale
+               cleanly; pixelated forces nearest-neighbour and aliases. */
+            image-rendering: auto;
+        }
+
+        .hero-title {
+            font-family: "MC", monospace;
+            font-size: 30px;
+            font-weight: 700;
+            color: #f4f4f5;
+            letter-spacing: 1.5px;
+            line-height: 39px;
+            margin: 12px 0 10px;
+        }
+
+        .hero-tag {
+            font-family: "MC", monospace;
+            font-size: 15px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.55);
+            letter-spacing: 0.6px;
+            margin: 0 0 12px;
+        }
+
+        .below-logo { margin-top: 12px; }
+
+        .hip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: transparent;
+            padding: 0;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .hip code {
+            display: block;
+            font-family: "MC", monospace;
+            font-size: 16px;
+            color: rgba(46, 156, 255, 0.35);
+            background: none;
+            padding: 0;
+            border: 0;
+            border-radius: 0;
+            transition: 0.3s;
+        }
+        .hip:hover code {
+            color: rgb(46, 156, 255);
+            text-shadow: 0 0 12px rgba(46, 156, 255, 0.4);
+        }
+        .copy-icon {
+            display: inline-flex;
+            color: rgba(46, 156, 255, 0.25);
+            transition: 0.3s;
+        }
+        .hip:hover .copy-icon {
+            color: rgba(46, 156, 255, 0.9);
+            filter: drop-shadow(0 0 6px rgba(46, 156, 255, 0.4));
+        }
+        .hip.copied code {
+            color: rgb(74, 222, 128);
+            text-shadow: 0 0 12px rgba(74, 222, 128, 0.4);
+        }
+        .hip.copied .copy-icon {
+            color: rgb(74, 222, 128);
+            filter: drop-shadow(0 0 6px rgba(74, 222, 128, 0.4));
+        }
+
+        /* ===== PANEL ===== */
+        .body { padding: 50px 0 40px; }
+        .content { padding: 0; }
+
+        .panel {
+            background: #1e1e1e;
+            border: none;
+            border-bottom: 8px solid #000;
+            border-radius: 36px;
+            padding: 0 0 20px;
+            margin: 0 auto;
+            max-width: 940px;
+            font-size: 14px;
+            box-shadow: rgba(0, 0, 0, 0.06) 0 10px 55px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+        }
+
+        .panel-heading {
+            padding: 25px;
+            color: #fff;
+            font-size: 26px;
+            font-weight: 800;
+            line-height: 37px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 3px 3px 0 0;
+        }
+
+        .panel-body { padding: 25px; }
+
+        .platform-row { text-align: center; margin-bottom: 32px; }
+
+        .platform-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            background-color: #111111;
+            color: #fff;
+            border: none;
+            padding: 1.5rem 3rem;
+            margin: 0.3rem;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 14px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            position: relative;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        .platform-btn.selected { background-color: #036fff; }
+        .platform-btn:hover { transform: scale(1.05); }
+
+        @keyframes ripple {
+            to { transform: translate(-50%, -50%) scale(2.4); opacity: 0; }
+        }
+        .platform-btn:active::after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            width: 100px;
+            height: 100px;
+            transform: translate(-50%, -50%) scale(0);
+            animation: 0.6s ease-out 0s 1 normal forwards running ripple;
+        }
+
+        .username { max-width: 350px; margin: 0 auto; }
+        .input-group { display: table; width: 100%; }
+
+        .form-control {
+            display: block;
+            width: 100%;
+            height: 46px;
+            padding: 10px 16px;
+            font-size: 18px;
+            line-height: 1.33;
+            color: #fff;
+            background-color: #111111;
+            border: 1px solid #111111;
+            border-radius: 6px 0 0 6px;
+            box-shadow: rgba(0, 0, 0, 0.075) 0 1px 1px inset;
+            font-family: inherit;
+        }
+        .form-control::placeholder { color: rgba(255, 255, 255, 0.45); }
+
+        .input-group-append { display: table-cell; width: 1%; vertical-align: middle; }
+        .input-group-append > .btn { margin-left: -1px; }
+
+        .btn {
+            display: inline-block;
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            background: none;
+            font-family: inherit;
+        }
+        .btn-lg { height: 46px; padding: 10px 16px; font-size: 18px; line-height: 1.33; border-radius: 0 6px 6px 0; }
+        .btn-success { background-color: #036fff; border-color: transparent; color: #fff; font-weight: 700; }
+        .btn .fa-chevron-right { margin-left: 5px; }
+
+        #errorMessage {
+            display: none;
+            max-width: 350px;
+            margin: 10px auto 0;
+            padding: 12px 16px;
+            border: 1px solid #ff4d4d;
+            border-radius: 8px;
+            background: #ffe6e6;
+            color: #d32f2f;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        #errorMessage.show { display: block; }
+
+        /* ===== FOOT ===== */
+        #foot { padding: 40px 0; }
+        #foot > .container {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .copyright {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #70757a;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .copyright-text {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .copyright-text > .copyright-text {
+            display: flex;
+            flex-direction: column;
+            align-items: normal;
+            justify-content: normal;
+            gap: normal;
+        }
+        .copyright-text > .copyright-text > span {
+            font-family: "MC", monospace;
+            font-size: 24px;
+            font-weight: 400;
+            color: #fff;
+        }
+        .copyright small { font-size: 85%; font-weight: 600; }
+
+        .copyright-links {
+            display: flex;
+            flex-direction: row;
+            align-items: normal;
+            justify-content: normal;
+            gap: 15px;
+            margin-top: 8px;
+            font-size: 10px;
+        }
+        .copyright-links > a {
+            display: block;
+            color: #7a7a7a;
+            font-family: "MC", monospace;
+            font-size: 10px;
+            font-weight: 400;
+            cursor: pointer;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .copyright-links > a:hover { color: #fff; }
+    </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+    <div class="top-content">
+    <div class="head">
+        <div class="container">
+            <div class="logo">
+                <a href="#"><img src="https://website.donutsmp.org/bcGCsev.png" alt="Donut SMP"></a>
+            </div>
+            <h1 class="hero-title">Store</h1>
+            <div class="hero-tag">Upgrade your experience on Donut SMP</div>
+            <div class="below-logo">
+                <div id="copy" data-clipboard-text="donutsmp.net" class="hip" role="button" tabindex="0" aria-label="Copy server IP address">
+                    <code>donutsmp.net</code>
+                    <span class="copy-icon">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="1"></rect><path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1"></path></svg>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+            <div class="notification"></div>
+        </div>
+        <div class="body">
+            <div class="content">
+                <div class="panel panel-default">
+                    <div class="panel-heading"><center>Enter your Minecraft Username</center></div>
+                    <div class="panel-body form-login" id="loginFormContainer">
+                        <div>
+                            <input type="hidden" name="mine-version" id="mineVersionInput" value="java">
+
+                            <div style="text-align: center; margin-bottom: 32px;">
+                                <button type="button" class="platform-btn selected" data-platform="java">
+                                    <svg width="25" height="25" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15.8346 2.5H4.16797C3.50493 2.5 2.86904 2.76339 2.4002 3.23223C1.93136 3.70107 1.66797 4.33696 1.66797 5V9.16667H18.3346V5C18.3346 4.33696 18.0712 3.70107 17.6024 3.23223C17.1336 2.76339 16.4977 2.5 15.8346 2.5ZM1.66797 11.6667C1.66797 12.3297 1.93136 12.9656 2.4002 13.4344C2.86904 13.9033 3.50493 14.1667 4.16797 14.1667H9.16797V15.8333H5.83464C5.61362 15.8333 5.40166 15.9211 5.24538 16.0774C5.0891 16.2337 5.0013 16.4457 5.0013 16.6667C5.0013 16.8877 5.0891 17.0996 5.24538 17.2559C5.40166 17.4122 5.61362 17.5 5.83464 17.5H14.168C14.389 17.5 14.6009 17.4122 14.7572 17.2559C14.9135 17.0996 15.0013 16.8877 15.0013 16.6667C15.0013 16.4457 14.9135 16.2337 14.7572 16.0774C14.6009 15.9211 14.389 15.8333 14.168 15.8333H10.8346V14.1667H15.8346C16.4977 14.1667 17.1336 13.9033 17.6024 13.4344C18.0712 12.9656 18.3346 12.3297 18.3346 11.6667V10.8333H1.66797V11.6667Z" fill="white"></path></svg>
+                                    JAVA
+                                </button>
+
+                                <button type="button" class="platform-btn" data-platform="bedrock">
+                                    <svg width="25" height="25" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18.8709 9.5852C18.0424 5.8395 16.7955 3.84028 14.9459 3.29419C14.5571 3.18013 14.1538 3.12315 13.7487 3.12505C13.2131 3.12505 12.7467 3.25551 12.2533 3.3938C11.6588 3.56059 10.9834 3.75005 9.99866 3.75005C9.01389 3.75005 8.33811 3.56098 7.74241 3.39419C7.24866 3.25551 6.78264 3.12505 6.24866 3.12505C5.82968 3.12357 5.41254 3.18037 5.0092 3.2938C3.16936 3.83755 1.92327 5.83598 1.08264 9.58286C0.178734 13.6149 0.623656 16.1606 2.3303 16.7512C2.56423 16.8337 2.81038 16.8762 3.05842 16.877C4.22756 16.877 5.16506 15.9032 5.80569 15.1059C6.52952 14.2036 7.37678 13.7458 9.99866 13.7458C12.3405 13.7458 13.3096 14.0633 14.1467 15.1059C14.6729 15.7614 15.1701 16.22 15.6662 16.5086C16.326 16.8922 16.9854 16.9774 17.6256 16.7575C18.6342 16.4133 19.2123 15.5036 19.3444 14.0528C19.4447 12.9403 19.2901 11.479 18.8709 9.5852ZM8.12366 9.37505H6.87366V10.625C6.87366 10.7908 6.80781 10.9498 6.6906 11.067C6.57339 11.1842 6.41442 11.25 6.24866 11.25C6.0829 11.25 5.92392 11.1842 5.80671 11.067C5.6895 10.9498 5.62366 10.7908 5.62366 10.625V9.37505H4.37366C4.2079 9.37505 4.04892 9.3092 3.93171 9.19199C3.8145 9.07478 3.74866 8.91581 3.74866 8.75005C3.74866 8.58429 3.8145 8.42531 3.93171 8.3081C4.04892 8.19089 4.2079 8.12505 4.37366 8.12505H5.62366V6.87505C5.62366 6.70929 5.6895 6.55031 5.80671 6.4331C5.92392 6.31589 6.0829 6.25005 6.24866 6.25005C6.41442 6.25005 6.57339 6.31589 6.6906 6.4331C6.80781 6.55031 6.87366 6.70929 6.87366 6.87505V8.12505H8.12366V9.37505Z" fill="white"></path></svg>
+                                    BEDROCK
+                                </button>
+                            </div>
+
+                            <div class="username" style="max-width: 350px; margin: 0 auto;">
+                                <div class="input-group" style="text-align: left;">
+                                    <input type="text" name="ign" id="usernameInput" class="form-control input-lg form-control-lg" placeholder="Enter your username" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+                                    <div class="input-group-append input-group-btn">
+                                        <button class="btn btn-success btn-lg" id="continueBtn" type="button">
+                                            Continue
+                                            <i class="fa fa-chevron-right ml-2" style="margin-left:5px;"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="errorMessage" role="alert"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-content">
+    <div id="foot">
+        <div class="container">
+            <section class="copyright">
+                <div class="copyright-text">
+                    <div class="copyright-text"><span>donutsmp.net</span></div>
+                </div>
+                <small>Not associated with Mojang or Microsoft</small>
+                <div class="copyright-links">
+                    <a href="#">Store Privacy Policy</a>
+                    <a href="#">Donut Privacy Policy</a>
+                    <a href="#">Support</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Refund Policy</a>
+                </div>
+            </section>
+        </div>
+    </div>
+    </div>
+
+</div>
+
+<!--
+  Only script in this file. Local UI only: moves the .selected class between the
+  two platform buttons and keeps the hidden mine-version input in sync.
+  Sends no network requests. No form is submitted.
+-->
+<script>
+(function () {
+  var buttons = Array.prototype.slice.call(document.querySelectorAll('.platform-btn'));
+  var hidden = document.getElementById('mineVersionInput');
+  var input = document.getElementById('usernameInput');
+  var continueBtn = document.getElementById('continueBtn');
+  var errorBox = document.getElementById('errorMessage');
+
+  function select(btn) {
+    buttons.forEach(function (b) { b.classList.remove('selected'); });
+    btn.classList.add('selected');
+    if (hidden) hidden.value = btn.getAttribute('data-platform');
+  }
+
+  buttons.forEach(function (btn) {
+    btn.addEventListener('click', function () { select(btn); });
+  });
+
+  // Mirror the live page: initial state comes from the hidden input.
+  var initial = hidden && hidden.value;
+  var match = buttons.filter(function (b) { return b.getAttribute('data-platform') === initial; });
+  if (match.length) {
+    buttons.forEach(function (b) { b.classList.remove('selected'); });
+    match[0].classList.add('selected');
+  }
+
+  function showError(msg) {
+    if (!errorBox) return;
+    errorBox.textContent = msg;
+    errorBox.classList.add('show');
+  }
+
+  function clearError() {
+    if (!errorBox) return;
+    errorBox.textContent = '';
+    errorBox.classList.remove('show');
+  }
+
+  // Enter key submits, same as the live <form>.
+  if (input) {
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); go(); }
+    });
+    input.addEventListener('input', clearError);
+  }
+
+  function go() {
+    var name = (input && input.value || '').trim();
+
+    if (!name) { showError('Please enter your username'); if (input) input.focus(); return; }
+    if (!/^[A-Za-z0-9_]{3,16}$/.test(name)) {
+      showError('Invalid username. Use 3-16 letters, numbers or underscores.');
+      if (input) input.focus();
+      return;
+    }
+
+    // Local prototype only: hand the name to the checkout mockup via sessionStorage.
+    // No request is sent anywhere.
+    try {
+      sessionStorage.setItem('mock_username', name);
+      sessionStorage.setItem('mock_platform', hidden ? hidden.value : 'java');
+    } catch (err) { /* private mode */ }
+
+    window.location.href = 'donutsmp-checkout-layout.html';
+  }
+
+  if (continueBtn) continueBtn.addEventListener('click', go);
+})();
+</script>
+
+</body>
+</html>

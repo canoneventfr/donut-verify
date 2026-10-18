@@ -1,0 +1,15 @@
+{
+  "buildCommand": "echo 'Static build'",
+  "devCommand": "node server.js",
+  "installCommand": "echo 'No install needed'",
+  "framework": null,
+  "functions": {
+    "api/*.js": {
+      "runtime": "nodejs20.x",
+      "maxDuration": 30
+    }
+  },
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/$1" }
+  ]
+}
