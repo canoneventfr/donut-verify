@@ -1,1 +1,9 @@
-function text() { [native code] }
+{
+  "name": "donut-verify",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "vercel-build": "node build.cjs"
+  }
+}
