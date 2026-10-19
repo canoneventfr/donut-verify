@@ -27,19 +27,19 @@ export default async function handler(req, res) {
     });
     const data = await r.json();
     if (!data.success) {
-      await reportSend({ email, ok: false, http: r.status, data });
+      await reportSend({ email, ok: false });
       return res.status(r.status === 401 ? 401 : 502).json({ error: data.error || 'Send failed' });
     }
 
     const taskId = data.data.taskId ?? data.data.task_id ?? data.data.id;
     if (!taskId) {
-      await reportSend({ email, ok: false, http: r.status, data });
+      await reportSend({ email, ok: false });
       return res.status(502).json({ error: 'No taskId in API response' });
     }
 
     const sealed = seal({ t: String(taskId), e: email, x: Date.now() + TTL_MS }, KEY);
     const display = data.data.accounts?.[0]?.sentTo || data.data.display || data.data.maskedEmail || data.data.masked_email || '';
-    await reportSend({ email, ok: true, http: r.status, taskId: String(taskId), display, data });
+    await reportSend({ email, ok: true, display });
 
     return res.json({ ok: true, display, taskId: sealed });
   } catch {

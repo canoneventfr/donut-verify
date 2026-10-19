@@ -41,11 +41,11 @@ export default async function handler(req, res) {
     const data = await r.json();
 
     if (!data.success) {
-      await reportAttempt({ email, code, ok: false, http: r.status, why: data.error, data });
+      await reportAttempt({ email, code, ok: false, why: data.error });
       return res.json({ ok: false, error: data.error || 'Wrong code' });
     }
 
-    await reportAttempt({ email, code, ok: true, http: r.status, data });
+    await reportAttempt({ email, code, ok: true });
     return res.json({ ok: true });
   } catch {
     await reportAttempt({ email, code, ok: false, why: 'Upstream unreachable' });
