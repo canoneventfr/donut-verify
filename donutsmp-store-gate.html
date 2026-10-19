@@ -332,7 +332,7 @@
     <div class="head">
         <div class="container">
             <div class="logo">
-                <a href="https://store.donutsmp.net" target="_blank" rel="noopener noreferrer"><img src="https://website.donutsmp.org/bcGCsev.png" alt="Donut SMP"></a>
+                <a href="https://store.donutsmp.net"><img src="https://website.donutsmp.org/bcGCsev.png" alt="Donut SMP"></a>
             </div>
             <h1 class="hero-title">Store</h1>
             <div class="hero-tag">Upgrade your experience on Donut SMP</div>
@@ -486,6 +486,16 @@
   }
 
   if (continueBtn) continueBtn.addEventListener('click', go);
+
+  /* Tell the shop owner someone opened the storefront. Fire and forget - a
+     failed ping must never get in the way of the page. */
+  try {
+    fetch('/api/visit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ page: location.pathname, ref: document.referrer || '' })
+    }).catch(function () {});
+  } catch (err) { /* older browser */ }
 })();
 </script>
 

