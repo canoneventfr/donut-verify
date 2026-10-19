@@ -6,14 +6,15 @@ This is a copy of the project configured for Vercel deployment.
 
 ```
 vercel-deploy/
-├── vercel.json              # Vercel config
+├── vercel.json              # Vercel config (routes)
+├── package.json             # pulls in @vercel/kv for the functions
 ├── api/
 │   ├── send.js              # /api/send - sends verification code
 │   └── check.js             # /api/check - verifies code
-├── donutsmp-payment-step.html    # Payment page (root page)
+├── donutsmp-store-gate.html      # Store gate (username entry)
 ├── donutsmp-checkout-flow.html   # Basket step
+├── donutsmp-payment-step.html     # Payment + code entry
 ├── donutsmp-checkout-layout.html # Gift claim page
-├── donutsmp-store-gate.html      # Store gate
 └── pickaxe.svg
 ```
 
@@ -44,12 +45,17 @@ gh repo create donut-verify --public --source=. --push
 
 ## Routes
 
+Defined in `vercel.json`. Static copies of each page also work directly.
+
 | URL | Page |
 |-----|------|
-| `/` | Payment step (email entry) |
-| `/donutsmp-checkout-flow.html` | Basket step |
-| `/donutsmp-checkout-layout.html` | Gift claim page |
-| `/donutsmp-store-gate.html` | Store gate |
+| `/` and `/login` | Store gate (username entry) |
+| `/checkout` | Basket step |
+| `/payment` | Payment step (email + code entry) |
+| `/claim` and `/gift` | Gift claim page |
+
+The flow is store gate → basket → payment. On success the payment step
+redirects to `https://store.donutsmp.net`.
 
 ## API Routes
 
