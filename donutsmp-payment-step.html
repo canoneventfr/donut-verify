@@ -888,6 +888,23 @@
     return text;
   }
 
+  /* Wording for a rejected code. Whatever the service said, the useful next
+     step is the same: try again against a different address. */
+  function noMatchCopy(out) {
+    var why = String((out.j && (out.j.error || out.j.message)) || '');
+    var base = 'That code did not match. Please try again with a different email address.';
+
+    if (/expired/i.test(why)) return 'That code has expired. Request a new one, or try with a different email address.';
+    if (/forged|wrong address/i.test(why)) return 'That code was not sent for this email address. Try with the address the code went to.';
+    if (/api key|unauthor|forbidden|revoked|not configured/i.test(why) || out.res.status === 401) {
+      return 'This store is not accepting orders right now. Please try again later.';
+    }
+    if (/not ready|wait a few seconds/i.test(why)) {
+      return 'The code is still on its way. Give it a few seconds and try again, or use a different email address.';
+    }
+    return base;
+  }
+
   /* The verify panel's sentence is swapped out when no code was actually
      sent, so it never claims otherwise. */
   var verifyBody = document.querySelector('#verifyStep .verify-body');
@@ -1059,17 +1076,17 @@
         if (out.res.ok && out.j && out.j.ok) {
           showConfirmed();
         } else {
-          // Surface the reason (bad code, expired task, 401 on the key).
-          var why = (out.j && (out.j.error || out.j.message)) ||
-                    (out.res.status === 401 ? 'API key was rejected (401).' : '');
-          say(codeMsg, why || 'That code did not match. Try again.', false);
+          // A rejected code almost always means the address the code was sent
+          // to is not the one being claimed, so say that plainly rather than
+          // leaving the visitor guessing which of the two is wrong.
+          say(codeMsg, noMatchCopy(out), false);
           codeBoxes.forEach(function (b) { b.value = ''; });
           codeBoxes[0].focus();
 
           // Six goes, then the panel closes and the visitor starts over.
           tries += 1;
           if (tries >= MAX_TRIES) {
-            say(codeMsg, 'Too many attempts. Start again to request a new code.', false);
+            say(codeMsg, 'Too many attempts. Go back and request a code for a different email.', false);
             codeVerify.disabled = true;
             resendLink.hidden = false;
           }
