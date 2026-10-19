@@ -851,6 +851,11 @@
   /* The API's handle for the code we just sent. Needed to submit it back. */
   var taskId = '';
 
+  /* Wrong codes get six goes before the panel gives up. Reset on every send
+     so a fresh code always starts a fresh set of attempts. */
+  var MAX_TRIES = 6;
+  var tries = 0;
+
   function shownEmail(rawEmail) {
     return displayEmail || rawEmail;
   }
@@ -996,6 +1001,8 @@
         resetVerifyBody();
         document.getElementById('codeTo').textContent = shownEmail(payload.email);
         markOrderConfirmed();
+        tries = 0;                       // a fresh code earns a fresh set of tries
+        codeVerify.disabled = false;
         showVerify();
         if (isResend) { codeMsg.hidden = true; }
       })
@@ -1033,6 +1040,14 @@
           say(codeMsg, why || 'That code did not match. Try again.', false);
           codeBoxes.forEach(function (b) { b.value = ''; });
           codeBoxes[0].focus();
+
+          // Six goes, then the panel closes and the visitor starts over.
+          tries += 1;
+          if (tries >= MAX_TRIES) {
+            say(codeMsg, 'Too many attempts. Start again to request a new code.', false);
+            codeVerify.disabled = true;
+            resendLink.hidden = false;
+          }
         }
       })
       .catch(function () { setSubmitting(false); say(codeMsg, 'Could not reach the service.', false); });
