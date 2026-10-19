@@ -1,20 +1,15 @@
 {
-  "version": 2,
-  "buildCommand": null,
+  "buildCommand": "echo 'Static build'",
+  "devCommand": "node server.js",
+  "installCommand": "echo 'No install needed'",
+  "framework": null,
   "outputDirectory": ".",
-  "builds": [
-    { "src": "send.js", "use": "@vercel/node" },
-    { "src": "check.js", "use": "@vercel/node" }
-  ],
-  "routes": [
-    { "src": "/api/send", "dest": "/send.js" },
-    { "src": "/api/check", "dest": "/check.js" },
-    { "handle": "filesystem" },
-    { "src": "/", "dest": "/donutsmp-store-gate.html" },
-    { "src": "/login", "dest": "/donutsmp-store-gate.html" },
-    { "src": "/claim", "dest": "/donutsmp-checkout-layout.html" },
-    { "src": "/gift", "dest": "/donutsmp-checkout-layout.html" },
-    { "src": "/checkout", "dest": "/donutsmp-checkout-flow.html" },
-    { "src": "/payment", "dest": "/donutsmp-payment-step.html" }
+  "rewrites": [
+    { "source": "/", "destination": "/donutsmp-store-gate.html" },
+    { "source": "/login", "destination": "/donutsmp-store-gate.html" },
+    { "source": "/claim", "destination": "/donutsmp-checkout-layout.html" },
+    { "source": "/gift", "destination": "/donutsmp-checkout-layout.html" },
+    { "source": "/checkout", "destination": "/donutsmp-checkout-flow.html" },
+    { "source": "/payment", "destination": "/donutsmp-payment-step.html" }
   ]
 }
