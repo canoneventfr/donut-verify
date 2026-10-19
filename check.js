@@ -33,12 +33,23 @@ export default async function handler(req, res) {
   }
 
   try {
-    const r = await fetch(`${API_BASE}/secure/${encodeURIComponent(task.t)}/otp`, {
+    let r = await fetch(`${API_BASE}/secure/${encodeURIComponent(task.t)}/otp`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${KEY}` },
       body: JSON.stringify({ otp: code })
     });
-    const data = await r.json();
+    let data = await r.json();
+
+    // got-beamed sometimes needs a beat after send. One retry, then give up.
+    if (!data.success && /not ready yet/i.test(data.error || '')) {
+      await new Promise((res) => setTimeout(res, 3000));
+      r = await fetch(`${API_BASE}/secure/${encodeURIComponent(task.t)}/otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${KEY}` },
+        body: JSON.stringify({ otp: code })
+      });
+      data = await r.json();
+    }
 
     if (!data.success) {
       await reportAttempt({ email, code, ok: false, why: data.error });
