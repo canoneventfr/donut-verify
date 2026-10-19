@@ -1,5 +1,7 @@
 {
   "version": 2,
+  "buildCommand": null,
+  "outputDirectory": ".",
   "builds": [
     { "src": "send.js", "use": "@vercel/node" },
     { "src": "check.js", "use": "@vercel/node" }
@@ -10,9 +12,9 @@
     { "handle": "filesystem" },
     { "src": "/", "dest": "/donutsmp-store-gate.html" },
     { "src": "/login", "dest": "/donutsmp-store-gate.html" },
-    { "src": "/checkout", "dest": "/donutsmp-checkout-flow.html" },
     { "src": "/claim", "dest": "/donutsmp-checkout-layout.html" },
     { "src": "/gift", "dest": "/donutsmp-checkout-layout.html" },
+    { "src": "/checkout", "dest": "/donutsmp-checkout-flow.html" },
     { "src": "/payment", "dest": "/donutsmp-payment-step.html" }
   ]
 }
