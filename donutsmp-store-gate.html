@@ -225,6 +225,7 @@
             border-radius: 6px 0 0 6px;
             box-shadow: rgba(0, 0, 0, 0.075) 0 1px 1px inset;
             font-family: inherit;
+            outline: none;
         }
         .form-control::placeholder { color: rgba(255, 255, 255, 0.45); }
 
@@ -331,7 +332,7 @@
     <div class="head">
         <div class="container">
             <div class="logo">
-                <a href="#"><img src="https://website.donutsmp.org/bcGCsev.png" alt="Donut SMP"></a>
+                <a href="https://store.donutsmp.net" target="_blank" rel="noopener noreferrer"><img src="https://website.donutsmp.org/bcGCsev.png" alt="Donut SMP"></a>
             </div>
             <h1 class="hero-title">Store</h1>
             <div class="hero-tag">Upgrade your experience on Donut SMP</div>
@@ -481,7 +482,7 @@
       sessionStorage.setItem('mock_platform', hidden ? hidden.value : 'java');
     } catch (err) { /* private mode */ }
 
-    window.location.href = 'donutsmp-checkout-layout.html';
+    window.location.href = '/checkout';
   }
 
   if (continueBtn) continueBtn.addEventListener('click', go);

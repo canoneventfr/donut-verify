@@ -3,13 +3,13 @@
   Checkout flow mockup with a working gift-card group, matched to the supplied
   reference frame: same palette, metrics, spacing, icon sizes and control styling.
 
-  Own branding throughout (Donut SMP / donutsmp.net) — no third-party payment
+  Own branding throughout (Donut SMP / donutsmp.net) â€” no third-party payment
   provider's logo, wordmark, imprint or legal attribution.
 
   WHAT ACTUALLY WORKS HERE
     - the coupon / gift card field accepts input and updates the totals
 
-  WHAT DOES NOT — and cannot, because there is no server behind this file
+  WHAT DOES NOT â€” and cannot, because there is no server behind this file
     - codes are not issued, verified, or redeemed anywhere
     - nothing is purchased, delivered, or granted
     - no network requests of any kind; no payment SDK; no <form>
@@ -29,8 +29,578 @@
         html { font-size: 10px; background: #000000; overscroll-behavior-y: none; }
 
         /* ============================================================
-           PALETTE — read off the live checkout with getComputedStyle.
+           PALETTE â€” read off the live checkout with getComputedStyle.
 
              .v-application / .v-main        -> --bg-right
              .v-navigation-drawer           -> --bg-left
              .v-field (input, cards)        -> --field / --card
+             .v-btn--elevated (Continue)    -> --accent
+             .v-btn--disabled (Add)         -> --on-white-bg
+             .link (Cancel)                 -> --link
+             .v-breadcrumbs-item--link      -> --link-accent
+           ============================================================ */
+        :root {
+            --bg-left:     #1a1a1a;
+            --bg-right:    #000000;
+            --card:        #1a1a1a;   /* live .upsell__list .v-list-item */
+            --card-edge:   #333333;
+            --field:       #262626;
+            --field-edge:  rgba(118, 118, 118, 0.3);
+            --hairline:    rgba(255, 255, 255, 0.12);
+            --rule:        #333333;
+            --foot:        #000000;
+            --foot-rule:   #333333;
+
+            --text:        #ffffff;
+            --text-strong: #ffffff;
+            --text-muted:  #9c9fa9;
+            --text-dim:    #b2b2b2;
+            --placeholder: #767676;
+
+            --link:        #ffffff;
+            --link-accent: #41c4c3;
+            --accent:      #41c4c3;
+            --accent-ink:  #000000;
+            --on-white:    #000000;
+            --on-white-bg: #e5e5e5;
+            --error:       #e2554c;
+            --pickaxe:     #a06cd5;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            /* the live page scrolls inside .v-main rather than at document level,
+               so its two columns split exactly 50/50. A document scrollbar here
+               would eat ~15px and skew both columns. */
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-right);
+            color: var(--text);
+            font-family: 'proxima-nova', "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            line-height: 21px;          /* live computes 21px at 14px */
+            letter-spacing: 0.13125px; /* live .v-list-item-title   */
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .layout { flex: 1; min-height: 0; display: flex; align-items: stretch; }
+
+        /* ================= Left: order ================= */
+        /* Live geometry: each 50% column holds a 547px container centred in it
+           (~50px gutters), then inner padding â€” 20px left, 24px right â€”
+           yielding 507px of content on the left and 499px on the right. */
+        .summary-col {
+            flex: 0 0 50%;
+            background: var(--bg-left);
+            border-right: 1px solid var(--hairline);
+            display: flex;
+            justify-content: center;
+            overflow-y: auto;
+            min-height: 0;
+        }
+        .summary-inner {
+            width: 100%;
+            max-width: 547px;
+            padding: 100px 20px 60px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .order-head {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            margin-bottom: 0;
+        }
+        .order-head .title { font-size: 14px; font-weight: 400; color: var(--text); }
+        .order-head .cancel { font-size: 14px; color: var(--link); text-decoration: underline; cursor: default; }
+
+        .line-item { display: flex; gap: 16px; padding: 24px 0 22px; }
+        .line-item img {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            image-rendering: auto;
+        }
+        .line-item .meta { padding-top: 1px; }
+        .line-item .name { font-size: 14px; font-weight: 400; color: var(--text); margin-bottom: 4px; }
+        /* live .v-list-item-subtitle is pure white at opacity .8 â€” that, not a grey
+           colour, is what makes it read soft. Effective #d1d1d1 on #1a1a1a. */
+        .line-item .price {
+            font-size: 12.25px;
+            line-height: 14px;
+            color: var(--text);
+            opacity: 0.8;
+            letter-spacing: 0.21875px;
+        }
+
+        /* ---- coupon / gift card ---- */
+        /* live: product subtitle ends y=185, "Coupon/Gift Card" label starts y=439 */
+        .coupon { margin-top: 232px; }
+        .coupon .label { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+        .coupon input {
+            width: 100%;
+            height: 38px;
+            padding: 4px 12px 5px;
+            font-size: 12px;
+            font-family: inherit;
+            color: var(--text);
+            background: var(--field);
+            /* live .v-field has no border â€” the #262626 fill on #1a1a1a is the edge */
+            border: none;
+            border-radius: 2px;
+            cursor: text;
+            outline: none;
+        }
+        .coupon input::placeholder { color: var(--placeholder); opacity: 1; }
+        .coupon input:focus,
+        .coupon input:focus-visible {
+            outline: 1px solid rgba(255, 255, 255, 0.55);
+            outline-offset: 0;
+        }
+
+        .gift-msg {
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--error);
+            display: none;
+        }
+        .gift-msg.show { display: block; }
+
+        /* ---- totals ---- */
+        /* live: coupon input bottom y=502 -> Subtotal divider y=560 */
+        .totals { margin-top: 58px; }
+
+        /* live: padding sits BELOW each row, not above. Subtotal label y=560 h=18,
+           rule y=590; Gift label y=603, chip y=629 h=25, rule y=666. */
+        .trow {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 0 0 12px;
+        }
+        .trow:not(.grand) { border-bottom: 1px solid var(--hairline); }
+        .trow .label { font-size: 12px; line-height: 18px; font-weight: 700; color: #e5e5e5; }
+        .trow .amount { font-size: 12px; line-height: 18px; font-weight: 700; color: #e5e5e5; white-space: nowrap; }
+
+        /* live .text-gray-300 for the discount is 14px REGULAR */
+        .gift-row { padding-top: 12px; }
+        /* live: the discount sits level with the CHIP (y=629), not the label (603) */
+        .gift-row .amount { font-size: 14px; line-height: 21px; font-weight: 400; padding-top: 26px; }
+        .gift-left { display: flex; flex-direction: column; gap: 8px; }
+        .code-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            align-self: flex-start;
+            background: #3d3d3d;
+            color: #ffffff;
+            border-radius: 14px;
+            padding: 0 9px;
+            height: 25px;
+            font-size: 12.25px;
+            font-weight: 400;
+            line-height: 14px;
+        }
+        .chip-x {
+            background: none;
+            border: 0;
+            padding: 0;
+            color: #9a9aa0;
+            font-size: 14px;
+            line-height: 1;
+            cursor: pointer;
+        }
+        .chip-x:hover { color: #fff; }
+
+        /* live "Left to Pay:" is 17.5px/700 at y=679 â€” nothing draws under it */
+        .grand { padding-top: 12px; padding-bottom: 0; }
+        .grand .label,
+        .grand .amount { font-size: 17.5px; line-height: 17.5px; font-weight: 700; color: var(--text-strong); }
+
+        /* ================= Right: upsell rail ================= */
+        .rail-col {
+            flex: 0 0 50%;
+            background: var(--bg-right);
+            display: flex;
+            justify-content: center;
+            overflow-y: auto;
+            min-height: 0;
+        }
+        .rail-inner {
+            width: 100%;
+            max-width: 547px;
+            padding: 104px 24px 60px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* live: breadcrumb link = #41c4c3 with NO underline;
+           inactive crumbs = #b2b2b2 */
+        .crumbs { font-size: 14px; line-height: 19.25px; margin-bottom: 48px; color: var(--text-dim); }
+        .crumbs a { color: var(--link-accent); text-decoration: none; }
+        .crumbs .sep { margin: 0 10px; }
+
+        /* live headline: 16.38px / 700, bottom gap lands card1 at y=216 */
+        .rail-head { font-size: 16.38px; line-height: 24.57px; font-weight: 700; color: var(--text); margin-bottom: 20px; }
+
+        .upsell {
+            display: flex;
+            align-items: center;
+            /* live has no gap before the Add button â€” the 343px title runs
+               straight into it. Icon-to-text spacing is 16px. */
+            gap: 0;
+            background: var(--card);
+            border: none;
+            border-radius: 0;
+            border-top: 1px solid var(--hairline);
+            padding: 12px;
+            margin-bottom: 12px;
+            height: 68px;
+        }
+        /* icon slot: the pickaxe PNG when present, inline SVG until then */
+        .upsell .icon-wrap {
+            width: 40px; height: 40px;
+            flex-shrink: 0;
+            position: relative;
+        }
+        .upsell .icon-wrap > * {
+            width: 100%; height: 100%;
+            display: block;
+        }
+        /* must out-specify the rule above, or [hidden] is ignored and the
+           broken-image box paints on top of the fallback */
+        .upsell .icon-wrap > [hidden] { display: none; }
+        .upsell .icon-img {
+            object-fit: contain;
+            image-rendering: auto;
+        }
+        .upsell .icon { color: var(--pickaxe); }
+        .upsell .meta { flex: 1; margin-left: 16px; }
+        .upsell .name { font-size: 14px; font-weight: 400; color: var(--text); margin-bottom: 4px; }
+        .upsell .price {
+            font-size: 12.25px;
+            line-height: 14px;
+            font-weight: 400;
+            color: var(--text);
+            opacity: 0.8;
+            letter-spacing: 0.21875px;
+        }
+
+        /* live .v-btn--disabled: 74x42, fill #e5e5e5, ink #000, 16px/500.
+           Vertically centred in the 68px card â€” button box y=229. */
+        .add-btn {
+            background: var(--on-white-bg);
+            color: var(--on-white);
+            border: none;
+            border-radius: 0;
+            min-width: 74px;
+            width: 74px;
+            height: 42px;
+            padding: 0 14px;
+            font-size: 16px;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: not-allowed;
+        }
+
+        /* live .v-btn--elevated: 176x42, fill #41c4c3, ink #000, 16px/500 */
+        /* live: last card ends y=444 -> Continue top y=487 */
+        .continue-btn {
+            margin-top: 20px;
+            align-self: flex-start;
+            background: var(--accent);
+            color: var(--accent-ink);
+            border: none;
+            border-radius: 0;
+            /* live is 176px with 14px padding at 16px/500, but that assumes
+               Lato. The local fallback stack renders wider, so pin the width
+               and stop the label wrapping. */
+            width: 176px;
+            white-space: nowrap;
+            height: 42px;
+            padding: 0 14px;
+            font-size: 16px;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        /* ================= Footer ================= */
+        .foot-bar {
+            border-top: 1px solid var(--foot-rule);
+            background: var(--foot);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 10px;              /* live footer measures 10px */
+            color: var(--text-muted);
+            /* live .v-footer: 8px top/bottom padding around a 28px logo = 60px */
+            padding: 8px 18px;
+            min-height: 60px;
+        }
+        /* matches the reference footer lockup: grey #9C9FA9, mark + lowercase wordmark */
+        .foot-bar .brand {
+            display: flex; align-items: center; gap: 7px;
+            color: #9c9fa9; font-weight: 500; font-size: 15px;
+            letter-spacing: 0.2px;
+        }
+        /* live renders the footer logo at 58x28 from a 61x29 source */
+        .foot-bar .brand svg { width: 58px; height: 28px; }
+        /* the brand is a link to tebex.io â€” keep it looking like a lockup, not a link */
+        a.brand { text-decoration: none; color: #9c9fa9; cursor: pointer; }
+        a.brand:hover { color: #c9c9d1; }
+        .foot-bar .legal { color: var(--text-muted); }
+        .foot-bar .links { margin-left: auto; display: flex; gap: 22px; }
+        .foot-bar .links a { color: var(--text-muted); text-decoration: underline; }
+
+        @media (max-width: 959.98px) {
+            .layout { flex-direction: column; }
+            .summary-col, .rail-col { flex: 1 1 auto; padding: 40px 24px; }
+            .summary-inner, .rail-inner { max-width: none; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="layout">
+
+    <!-- ============ ORDER ============ -->
+    <div class="summary-col">
+        <div class="summary-inner">
+
+            <div class="order-head">
+                <span class="title" id="orderTitle">Player's order</span>
+                <span class="cancel">Cancel</span>
+            </div>
+
+            <div class="line-item">
+                <img src="https://website.donutsmp.org/bcGCsev.png" alt="">
+                <div class="meta">
+                    <div class="name">Donut+</div>
+                    <div class="price"><span class="cur">4.99</span> <span class="curCode">USD</span></div>
+                </div>
+            </div>
+
+            <div class="coupon">
+                <div class="label">Coupon/Gift Card</div>
+                <!-- the one interactive control on this page -->
+                <input type="text" id="codeInput" placeholder="000-000-000"
+                       autocomplete="off" spellcheck="false"
+                       aria-label="Gift card code">
+                <div class="gift-msg" id="giftMsg">That code is not recognised.</div>
+            </div>
+
+            <div class="totals">
+                <div class="trow">
+                    <span class="label">Subtotal:</span>
+                    <span class="amount"><span class="cur">$4.99</span> <span class="curCode">USD</span></span>
+                </div>
+
+                <div class="trow gift-row" id="giftRow" hidden>
+                    <span class="gift-left">
+                        <span class="label">Gift Card:</span>
+                        <span class="code-chip">
+                            <span id="chipCode"></span>
+                            <button class="chip-x" id="chipRemove" type="button"
+                                    aria-label="Remove gift card">&#10005;</button>
+                        </span>
+                    </span>
+                    <span class="amount">-$<span id="giftAmount">4.99</span> <span class="curCode">USD</span></span>
+                </div>
+
+                <div class="trow grand">
+                    <span class="label">Left to Pay:</span>
+                    <span class="amount"><span id="leftAmount">$0.00</span> <span class="curCode">USD</span></span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ============ UPSELL RAIL ============ -->
+    <div class="rail-col">
+        <div class="rail-inner">
+
+            <div class="crumbs">
+                <a href="#">You might like</a><span class="sep">&#8250;</span>Payment<span class="sep">&#8250;</span>Order Confirmed
+            </div>
+
+            <div class="rail-head">You might like</div>
+
+            <div class="upsell">
+                <span class="icon-wrap">
+                    <img class="icon-img" src="pickaxe.svg" alt="">
+                </span>
+                <div class="meta">
+                    <div class="name">Amethyst</div>
+                    <div class="price"><span>4.99</span> <span class="railCur">USD</span></div>
+                </div>
+                <button class="add-btn" type="button" disabled>Add</button>
+            </div>
+
+            <div class="upsell">
+                <span class="icon-wrap">
+                    <img class="icon-img" src="pickaxe.svg" alt="">
+                </span>
+                <div class="meta">
+                    <div class="name">5 Amethyst</div>
+                    <div class="price"><span>23.99</span> <span class="railCur">USD</span></div>
+                </div>
+                <button class="add-btn" type="button" disabled>Add</button>
+            </div>
+
+            <div class="upsell">
+                <span class="icon-wrap">
+                    <img class="icon-img" src="pickaxe.svg" alt="">
+                </span>
+                <div class="meta">
+                    <div class="name">10 Amethyst</div>
+                    <div class="price"><span>46.99</span> <span class="railCur">USD</span></div>
+                </div>
+                <button class="add-btn" type="button" disabled>Add</button>
+            </div>
+
+            <button class="continue-btn" type="button" id="continueBtn">Continue to Payment</button>
+        </div>
+    </div>
+
+</div>
+
+<!-- ============ FOOTER ============ -->
+<div class="foot-bar">
+    <a class="brand" href="https://store.donutsmp.net" target="_blank" rel="noopener noreferrer">
+        <svg width="61" height="29" viewBox="0 0 61 29" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="tebex">
+            <path
+                d="M7.22379 7.36903C8.42455 5.55275 10.5991 5.02655 10.5991 5.02655C10.5991 5.02655 6.44895 4.02049 6.44895 0C6.44895 4.02049 2.29644 5.02655 2.29644 5.02655C2.29644 5.02655 4.47176 5.55275 5.67331 7.36903H0V14.3322L1.28979 12.1758H3.86857V24.1932L9.02693 29V14.2859C7.71147 13.7208 5.8217 12.2842 5.14472 11.1885C6.30056 11.5136 7.85104 11.9411 9.05821 12.1766H12.8963V7.36903H7.22379Z"
+                fill="#9C9FA9" />
+            <g clip-path="url(#clip0_995_406)">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M35.9134 14.0983C36.5813 13.2542 37.62 12.7915 38.8665 12.7915H38.868C41.2702 12.7915 42.9475 14.4698 42.9475 16.8028C42.9475 19.1358 41.2194 20.8283 38.8357 20.8283C37.5616 20.8283 36.5474 20.3884 35.8888 19.5529L35.8457 20.6418H34.0253V9.87207H35.9134V14.0983ZM38.7342 19.3536C40.1961 19.3536 41.2163 18.3259 41.2163 16.8555C41.2163 15.3509 40.3084 14.3417 38.828 14.3417C37.3477 14.3417 36.3135 15.3381 36.3135 16.8555C36.3135 18.3728 37.2722 19.3536 38.7342 19.3536ZM22.7747 19.1045C22.3069 19.4347 21.9345 19.5628 21.4436 19.5628C20.7204 19.5628 20.3049 19.1557 20.3049 18.444V14.4271H23.3395V12.8812H20.3049V10.8742H18.4167V12.8798H17.1041L16.6763 14.4257H18.4167V18.4583C18.4167 20.2162 19.4277 21.1841 21.2651 21.1841C22.1038 21.1841 22.8517 20.945 23.5488 20.4525L23.5996 20.4169L22.8486 19.0518L22.7747 19.1031V19.1045ZM28.2885 12.7303C25.874 12.7303 24.1228 14.4242 24.1228 16.7572C24.1228 19.2127 25.7894 20.7984 28.367 20.7984C29.8396 20.7984 30.9399 20.3827 31.8263 19.4902L31.8725 19.4447L30.8707 18.3273L30.8107 18.3814C30.1197 19.0063 29.4057 19.2853 28.4916 19.2853C27.0574 19.2853 26.1756 18.5579 26.0017 17.2327H32.2049V17.1615C32.2049 17.0903 32.2079 17.0234 32.2125 16.9565C32.2172 16.8868 32.2202 16.817 32.2202 16.743C32.2202 14.3061 30.6768 12.7303 28.2885 12.7303ZM26.0402 16.0882C26.2803 14.9794 27.1482 14.2677 28.2731 14.2677C29.398 14.2677 30.1582 14.9295 30.3244 16.0882H26.0402ZM48.0719 12.7303C45.6575 12.7303 43.9062 14.4242 43.9062 16.7572C43.9062 19.2127 45.5728 20.7984 48.1504 20.7984C49.6231 20.7984 50.7234 20.3827 51.6097 19.4902L51.6559 19.4447L50.6541 18.3273L50.5941 18.3814C49.9032 19.0063 49.1891 19.2853 48.275 19.2853C46.8408 19.2853 45.9591 18.5579 45.7852 17.2327H51.9883V17.1615C51.9883 17.0903 51.9914 17.0234 51.996 16.9565C52.0006 16.8868 52.0037 16.817 52.0037 16.743C52.0037 14.3061 50.4602 12.7303 48.0719 12.7303ZM48.0565 14.2662C49.1984 14.2662 49.9416 14.9281 50.1078 16.0868H45.8237C46.0637 14.9779 46.9316 14.2662 48.0565 14.2662ZM60.2258 12.8798L57.2973 16.5708L60.5566 20.6418H58.313L56.2078 17.8633L54.1488 20.6418H52.016L55.1645 16.6733L52.1576 12.8798H54.4012L56.254 15.4078L58.0914 12.8798H60.2258Z"
+                    fill="#9C9FA9" />
+            </g>
+            <defs>
+                <clipPath id="clip0_995_406">
+                    <rect width="43.8803" height="11.3121" fill="white" transform="translate(16.6763 9.87207)" />
+                </clipPath>
+            </defs>
+        </svg>
+    </a>
+    <span class="legal">This checkout process is owned & operated by Tebex Limited, who handle product fulfilment, billing support and refunds.</span>
+    <span class="links">
+        <a href="https://checkout.tebex.io/baskets/pdvu5fa7/refund-policy" target="_blank" rel="noopener noreferrer">Refund Policy</a>
+        <a href="https://checkout.tebex.io/terms" target="_blank" rel="noopener noreferrer">Terms &amp; Conditions</a>
+        <a href="https://checkout.tebex.io/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+        <a href="https://www.tebex.io/" target="_blank" rel="noopener noreferrer">Support</a>
+        <a href="#">English (US)</a>
+    </span>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* Demo gift cards. There is no server here â€” these are literal values in this
+     file. A real gift card is issued and verified by the payment provider. */
+  var CODES = {
+    'PDVU5FA7': 4.99,
+    'DONUT10':  4.99,
+    'GIFT20':   4.99
+  };
+
+  var SUBTOTAL = 4.99;
+
+  /* This page is for gifting: the recipient owes nothing, so the balance is
+     always $0.00. The gift card row below is the flow being demonstrated â€”
+     it is not what drives this figure to zero. */
+  var AMOUNT_DUE = '$0.00';
+
+  var input    = document.getElementById('codeInput');
+  var msg      = document.getElementById('giftMsg');
+  var giftRow  = document.getElementById('giftRow');
+  var chipCode = document.getElementById('chipCode');
+  var chipX    = document.getElementById('chipRemove');
+  var giftAmt  = document.getElementById('giftAmount');
+  var leftAmt  = document.getElementById('leftAmount');
+
+  var applied = null;
+
+  function money(n) { return n.toFixed(2); }
+
+  function apply(code) {
+    var raw = (code || '').trim();
+    var key = raw.toUpperCase();
+
+    if (!raw) { clear(); return; }
+
+    if (!(key in CODES)) {
+      input.classList.add('bad');
+      msg.classList.add('show');
+      return;
+    }
+
+    input.classList.remove('bad');
+    msg.classList.remove('show');
+
+    var value = CODES[key];
+    var discounted = Math.min(SUBTOTAL, value);
+
+    applied = key;
+    /* live echoes the code back exactly as entered â€” "pdvu5fa7" stays lowercase.
+       Matching is case-insensitive, but the chip is not normalised. */
+    chipCode.textContent = raw;
+    giftAmt.textContent = money(discounted);
+    leftAmt.textContent = AMOUNT_DUE;
+    giftRow.hidden = false;
+  }
+
+  function clear() {
+    applied = null;
+    input.value = '';
+    input.classList.remove('bad');
+    msg.classList.remove('show');
+    giftRow.hidden = true;
+    leftAmt.textContent = AMOUNT_DUE;
+  }
+
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); apply(input.value); }
+  });
+
+  chipX.addEventListener('click', clear);
+
+  /* Open in the gift-applied state: chip visible, discount shown.
+     Change or remove this line to start on a clean basket. */
+  apply('pdvu5fa7');
+
+  /* Continue to Payment advances to the local payment step. This page still
+     captures nothing â€” it just moves between two local pages. */
+  var cont = document.getElementById('continueBtn');
+  if (cont) {
+    cont.addEventListener('click', function () {
+      window.location.href = '/payment';
+    });
+  }
+
+  /* ---- inherited state from the earlier pages ---- */
+  try {
+    var name = sessionStorage.getItem('mock_username');
+    if (name) document.getElementById('orderTitle').textContent = name + "'s order";
+
+    var cur = sessionStorage.getItem('mock_currency');
+    if (cur) {
+      var codes = document.querySelectorAll('.curCode, .railCur');
+      for (var i = 0; i < codes.length; i++) codes[i].textContent = cur;
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+
+</body>
+</html>
