@@ -3,7 +3,7 @@
   Payment step for the Donut SMP checkout flow, matched to the live
   /payment screen: same palette, metrics, spacing and control styling.
 
-  Own branding throughout (Donut SMP / donutsmp.net) â€” no third-party payment
+  Own branding throughout (Donut SMP / donutsmp.net) — no third-party payment
   provider's logo, wordmark, imprint or legal attribution.
 
   Non-functional by construction:
@@ -25,7 +25,7 @@
         html { font-size: 10px; background: #000000; overscroll-behavior-y: none; }
 
         /* ============================================================
-           PALETTE â€” same measured values as the basket step.
+           PALETTE — same measured values as the basket step.
            ============================================================ */
         :root {
             --bg-left:     #1a1a1a;
@@ -148,7 +148,7 @@
         .trow .amount { font-size: 12px; line-height: 18px; font-weight: 700; color: var(--fine); white-space: nowrap; }
 
         .gift-row { padding-top: 12px; }
-        /* live: "Gift Card:" is fs 12 / fw 400 â€” unlike the bold Subtotal row */
+        /* live: "Gift Card:" is fs 12 / fw 400 — unlike the bold Subtotal row */
         .gift-row .label { font-weight: 400; }
         .gift-row .amount { font-size: 14px; line-height: 21px; font-weight: 400; padding-top: 26px; }
         .gift-left { display: flex; flex-direction: column; gap: 8px; }
@@ -193,7 +193,7 @@
         .crumbs a:hover { color: #d5d5d5; }
         .crumbs .current,
         .crumbs .current:hover { color: var(--link-accent); }
-        /* live: 20px-wide divider holding a 4x8 chevron. Using a "â€º" glyph put
+        /* live: 20px-wide divider holding a 4x8 chevron. Using a "›" glyph put
            the separators at the wrong widths and pushed Payment/Order
            Confirmed 10-14px right. */
         .crumbs .sep {
@@ -246,7 +246,7 @@
         /* live renders placeholders as white at 50% opacity */
         .pay-input::placeholder { color: #ffffff; opacity: 0.5; }
         .pay-input:disabled { opacity: 1; -webkit-text-fill-color: var(--text); }
-        /* neutral focus ring â€” outline, so nothing shifts by a pixel.
+        /* neutral focus ring — outline, so nothing shifts by a pixel.
            No yellow: the field just gets a light edge like the reference. */
         /* Focus and invalid outlines live on the wrapper, matching live where the
            outline is on the v-field, not the input. :focus-within keeps the
@@ -742,7 +742,7 @@
   'use strict';
 
   /* The three fields are editable so a buyer can enter who the gift is for.
-     Nothing reads them, stores them, or sends them anywhere â€” there is no
+     Nothing reads them, stores them, or sends them anywhere — there is no
      form, no fetch and no storage. Wire them to your own endpoint to actually
      collect the details. */
   /* Both checkboxes are required before Complete Order unlocks. The gate is
@@ -765,7 +765,7 @@
   var confirmTimer = null;
 
   /* Address is checked before anything is sent. Deliberately not the native
-     type="email" validation â€” that allows "a@b" and is looser than we want. */
+     type="email" validation — that allows "a@b" and is looser than we want. */
   var EMAIL_RE = /^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
   var emailError = document.getElementById('emailError');
 
@@ -802,16 +802,16 @@
   sync();
 
   /* ============================================================
-   VERIFICATION ENDPOINTS â€” Vercel serverless functions.
+   VERIFICATION ENDPOINTS — Vercel serverless functions.
 
    These point to the Vercel serverless functions at /api/send and /api/check.
    The API key is stored in Vercel Environment Variables (never in this file).
    Task state is stored in Vercel KV (serverless, persistent).
 
-   send  â€” POST { email } -> 2xx means "sent". May return
+   send  — POST { email } -> 2xx means "sent". May return
            { display: "..." } : the string shown for that address.
            With no such field the page shows the entered address as-is.
-   check â€” POST { email, code, taskId } -> { ok: true } when it matches.
+   check — POST { email, code, taskId } -> { ok: true } when it matches.
    ============================================================ */
   var ENDPOINTS = {
     send:  '/api/send',
@@ -843,7 +843,7 @@
     crumbEnd.classList.add('current');
   }
 
-  /* What the panel shows for the address. The API owns this string â€” it comes
+  /* What the panel shows for the address. The API owns this string — it comes
      back from the send endpoint. Nothing is invented here: with no display
      string from the API, we show the address that was actually entered. */
   var displayEmail = '';
@@ -884,10 +884,10 @@
   });
 
   // Opening the file directly (file://) means /send and /check resolve
-  // against the filesystem and can never reach the server. Say so â€” once.
+  // against the filesystem and can never reach the server. Say so — once.
   if (location.protocol === 'file:' && !sessionStorage.getItem('warnedFile')) {
     sessionStorage.setItem('warnedFile', '1');
-    showFail('This page must be opened through the local server â€”\n' +
+    showFail('This page must be opened through the local server —\n' +
              'run "node server.js" and then open http://localhost:8000');
   }
 
@@ -895,7 +895,7 @@
 
   function setSubmitting(on) {
     codeVerify.disabled = on;
-    codeVerify.textContent = on ? 'Please waitâ€¦' : 'Continue';
+    codeVerify.textContent = on ? 'Please wait…' : 'Continue';
     otpSpinner.hidden = !on;
   }
 
@@ -919,7 +919,7 @@
     resetVerifyBody();   // clear any "couldn't send" wording for the next attempt
   }
 
-  /* Final state â€” swap the code panel for the confirmation panel.
+  /* Final state — swap the code panel for the confirmation panel.
      Gives the confirmation a beat to read, then hands off to the store. */
   function showConfirmed() {
     document.getElementById('doneName').textContent = fName.value.trim();
@@ -959,14 +959,14 @@
   });
 
   /* Send the recipient's email, then reveal the code entry panel.
-     Name and ZIP stay local â€” only the address leaves the browser.
+     Name and ZIP stay local — only the address leaves the browser.
      The response may carry the string to display for that address. */
   function sendDetails(isResend) {
     var payload = { email: fEmail.value.trim() };
 
     /* Checked before anything leaves the page. Applies to Resend too, not just
        the first send, so a bad address can never reach the endpoint.
-       Stays on the form â€” the code panel only appears after a real send. */
+       Stays on the form — the code panel only appears after a real send. */
     if (!emailValid()) {
       showEmailError(true);
       showFail('Invalid email, please try a different one.');
@@ -975,7 +975,7 @@
     }
     showEmailError(false);
 
-    if (!isResend) { completeBtn.disabled = true; completeBtn.textContent = 'Sendingâ€¦'; }
+    if (!isResend) { completeBtn.disabled = true; completeBtn.textContent = 'Sending…'; }
     post(ENDPOINTS.send, payload)
       .then(function (res) {
         if (!isResend) { completeBtn.textContent = 'Complete Order'; completeBtn.disabled = false; }

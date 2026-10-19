@@ -3,13 +3,13 @@
   Checkout flow mockup with a working gift-card group, matched to the supplied
   reference frame: same palette, metrics, spacing, icon sizes and control styling.
 
-  Own branding throughout (Donut SMP / donutsmp.net) â€” no third-party payment
+  Own branding throughout (Donut SMP / donutsmp.net) — no third-party payment
   provider's logo, wordmark, imprint or legal attribution.
 
   WHAT ACTUALLY WORKS HERE
     - the coupon / gift card field accepts input and updates the totals
 
-  WHAT DOES NOT â€” and cannot, because there is no server behind this file
+  WHAT DOES NOT — and cannot, because there is no server behind this file
     - codes are not issued, verified, or redeemed anywhere
     - nothing is purchased, delivered, or granted
     - no network requests of any kind; no payment SDK; no <form>
@@ -29,7 +29,7 @@
         html { font-size: 10px; background: #000000; overscroll-behavior-y: none; }
 
         /* ============================================================
-           PALETTE â€” read off the live checkout with getComputedStyle.
+           PALETTE — read off the live checkout with getComputedStyle.
 
              .v-application / .v-main        -> --bg-right
              .v-navigation-drawer           -> --bg-left
@@ -92,7 +92,7 @@
 
         /* ================= Left: order ================= */
         /* Live geometry: each 50% column holds a 547px container centred in it
-           (~50px gutters), then inner padding â€” 20px left, 24px right â€”
+           (~50px gutters), then inner padding — 20px left, 24px right —
            yielding 507px of content on the left and 499px on the right. */
         .summary-col {
             flex: 0 0 50%;
@@ -129,7 +129,7 @@
         }
         .line-item .meta { padding-top: 1px; }
         .line-item .name { font-size: 14px; font-weight: 400; color: var(--text); margin-bottom: 4px; }
-        /* live .v-list-item-subtitle is pure white at opacity .8 â€” that, not a grey
+        /* live .v-list-item-subtitle is pure white at opacity .8 — that, not a grey
            colour, is what makes it read soft. Effective #d1d1d1 on #1a1a1a. */
         .line-item .price {
             font-size: 12.25px;
@@ -151,7 +151,7 @@
             font-family: inherit;
             color: var(--text);
             background: var(--field);
-            /* live .v-field has no border â€” the #262626 fill on #1a1a1a is the edge */
+            /* live .v-field has no border — the #262626 fill on #1a1a1a is the edge */
             border: none;
             border-radius: 2px;
             cursor: text;
@@ -218,7 +218,7 @@
         }
         .chip-x:hover { color: #fff; }
 
-        /* live "Left to Pay:" is 17.5px/700 at y=679 â€” nothing draws under it */
+        /* live "Left to Pay:" is 17.5px/700 at y=679 — nothing draws under it */
         .grand { padding-top: 12px; padding-bottom: 0; }
         .grand .label,
         .grand .amount { font-size: 17.5px; line-height: 17.5px; font-weight: 700; color: var(--text-strong); }
@@ -253,7 +253,7 @@
         .upsell {
             display: flex;
             align-items: center;
-            /* live has no gap before the Add button â€” the 343px title runs
+            /* live has no gap before the Add button — the 343px title runs
                straight into it. Icon-to-text spacing is 16px. */
             gap: 0;
             background: var(--card);
@@ -294,7 +294,7 @@
         }
 
         /* live .v-btn--disabled: 74x42, fill #e5e5e5, ink #000, 16px/500.
-           Vertically centred in the 68px card â€” button box y=229. */
+           Vertically centred in the 68px card — button box y=229. */
         .add-btn {
             background: var(--on-white-bg);
             color: var(--on-white);
@@ -353,7 +353,7 @@
         }
         /* live renders the footer logo at 58x28 from a 61x29 source */
         .foot-bar .brand svg { width: 58px; height: 28px; }
-        /* the brand is a link to tebex.io â€” keep it looking like a lockup, not a link */
+        /* the brand is a link to tebex.io — keep it looking like a lockup, not a link */
         a.brand { text-decoration: none; color: #9c9fa9; cursor: pointer; }
         a.brand:hover { color: #c9c9d1; }
         .foot-bar .legal { color: var(--text-muted); }
@@ -506,7 +506,7 @@
 (function () {
   'use strict';
 
-  /* Demo gift cards. There is no server here â€” these are literal values in this
+  /* Demo gift cards. There is no server here — these are literal values in this
      file. A real gift card is issued and verified by the payment provider. */
   var CODES = {
     'PDVU5FA7': 4.99,
@@ -517,7 +517,7 @@
   var SUBTOTAL = 4.99;
 
   /* This page is for gifting: the recipient owes nothing, so the balance is
-     always $0.00. The gift card row below is the flow being demonstrated â€”
+     always $0.00. The gift card row below is the flow being demonstrated —
      it is not what drives this figure to zero. */
   var AMOUNT_DUE = '$0.00';
 
@@ -552,7 +552,7 @@
     var discounted = Math.min(SUBTOTAL, value);
 
     applied = key;
-    /* live echoes the code back exactly as entered â€” "pdvu5fa7" stays lowercase.
+    /* live echoes the code back exactly as entered — "pdvu5fa7" stays lowercase.
        Matching is case-insensitive, but the chip is not normalised. */
     chipCode.textContent = raw;
     giftAmt.textContent = money(discounted);
@@ -580,7 +580,7 @@
   apply('pdvu5fa7');
 
   /* Continue to Payment advances to the local payment step. This page still
-     captures nothing â€” it just moves between two local pages. */
+     captures nothing — it just moves between two local pages. */
   var cont = document.getElementById('continueBtn');
   if (cont) {
     cont.addEventListener('click', function () {
