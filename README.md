@@ -6,18 +6,20 @@ This is a copy of the project configured for Vercel deployment.
 
 ```
 vercel-deploy/
-├── vercel.json              # Vercel config (routes)
-├── lib/
-│   └── seal.js              # HMAC sign/verify for the task envelope
-├── api/
-│   ├── send.js              # /api/send - emails a code, returns a sealed task
-│   └── check.js             # /api/check - verifies the code
+├── vercel.json              # routes + function wiring
+├── seal.js                  # HMAC sign/verify for the task envelope
+├── send.js                  # /api/send - emails a code, returns a sealed task
+├── check.js                 # /api/check - verifies the code
 ├── donutsmp-store-gate.html      # Store gate (username entry)
 ├── donutsmp-checkout-flow.html   # Basket step
 ├── donutsmp-payment-step.html     # Payment + code entry
 ├── donutsmp-checkout-layout.html # Gift claim page
 └── pickaxe.svg
 ```
+
+The three `.js` files sit at the root rather than in `api/` because GitHub's
+web uploader cannot write into subfolders. `vercel.json` maps them onto
+`/api/send` and `/api/check` with a `builds` + `routes` pair.
 
 ## Deploy to Vercel
 
@@ -50,12 +52,12 @@ Defined in `vercel.json`. Static copies of each page also work directly.
 | URL | Page |
 |-----|------|
 | `/` and `/login` | Store gate (username entry) |
-| `/checkout` | Basket step |
+| `/claim` and `/gift` | Basket (Tebex-style) |
+| `/checkout` | Basket step with the gift card applied |
 | `/payment` | Payment step (email + code entry) |
-| `/claim` and `/gift` | Gift claim page |
 
-The flow is store gate → basket → payment. On success the payment step
-redirects to `https://store.donutsmp.net`.
+The flow is store gate → basket → checkout → payment. On success the payment
+step redirects to `https://store.donutsmp.net`.
 
 ## API Routes
 

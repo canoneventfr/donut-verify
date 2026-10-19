@@ -860,6 +860,34 @@
     return displayEmail || rawEmail;
   }
 
+  /* Anything the server or the network reports gets rewritten into something
+     a shopper can act on. The only wording that reaches the modal as-is is a
+     message we wrote deliberately; transport failures all collapse to the
+     same "come back later" line rather than leaking jargon. */
+  var PASS_THROUGH = [
+    'Invalid email, please try a different one.',
+    'Try again later',
+    'Bad or forged code — resend',
+    'Code expired — resend',
+    'Wrong address — resend',
+    'Too many attempts — resend'
+  ];
+
+  function friendly(reason) {
+    var text = String(reason == null ? '' : reason).trim();
+    if (!text) return 'Something went wrong. Please try again later.';
+    if (PASS_THROUGH.indexOf(text) !== -1) return text;
+    // The upstream service decides the wording for anything user-facing.
+    if (/account does not exist/i.test(text)) return 'Invalid email, please try a different one.';
+    if (/api key|unauthor|forbidden|revoked|server not configured/i.test(text)) {
+      return 'This store is not accepting orders right now. Please try again later.';
+    }
+    if (/HTTP\\s*\\d+|network|fetch|load failed/i.test(text)) {
+      return 'Something went wrong. Please try again later.';
+    }
+    return text;
+  }
+
   /* The verify panel's sentence is swapped out when no code was actually
      sent, so it never claims otherwise. */
   var verifyBody = document.querySelector('#verifyStep .verify-body');
@@ -1010,10 +1038,7 @@
         if (!isResend) { completeBtn.textContent = 'Complete Order'; completeBtn.disabled = false; }
         // No code was sent, so the panel must NOT appear. The modal explains
         // why, and the user stays on the form to retry.
-        var msg = e.message === 'Account does not exist'
-          ? 'Invalid email, please try a different one.'
-          : (e.message || 'Could not reach the verification service. Please try again.');
-        showFail(msg);
+        showFail(friendly(e.message));
       });
   }
 
@@ -1050,7 +1075,7 @@
           }
         }
       })
-      .catch(function () { setSubmitting(false); say(codeMsg, 'Could not reach the service.', false); });
+      .catch(function () { setSubmitting(false); say(codeMsg, 'Something went wrong. Please try again later.', false); });
   });
 
   codeBack.addEventListener('click', hideVerify);

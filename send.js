@@ -1,5 +1,4 @@
-import crypto from 'node:crypto';
-import { seal } from '../lib/seal.js';
+import { seal } from './seal.js';
 
 /* Step 1 of the code check: ask got-beamed to email a code.
 
@@ -34,7 +33,7 @@ export default async function handler(req, res) {
     const sealed = seal({ t: String(taskId), e: email, x: Date.now() + TTL_MS }, KEY);
     const display = data.data.accounts?.[0]?.sentTo || data.data.display || data.data.maskedEmail || data.data.masked_email || '';
     return res.json({ ok: true, display, taskId: sealed });
-  } catch (e) {
-    return res.status(502).json({ error: 'API unreachable', detail: String((e && e.message) || e) });
+  } catch {
+    return res.status(502).json({ error: 'Try again later' });
   }
 }

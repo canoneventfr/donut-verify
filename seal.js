@@ -6,8 +6,9 @@ import crypto from 'node:crypto';
    signed with the API key. /api/check verifies the signature and the clock
    before it accepts anything, which is as much as a stored row would buy.
 
-   This lives outside api/ so it is bundled into the functions rather than
-   published as an endpoint of its own. */
+   These live at the project root rather than api/ because GitHub's web
+   uploader cannot write into subfolders. vercel.json wires them to /api/*
+   through the builds/routes pair. */
 
 const b64url = (buf) =>
   Buffer.from(buf).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
@@ -30,8 +31,8 @@ export function unseal(token, secret) {
   const given = text.slice(dot + 1);
   const expect = b64url(crypto.createHmac('sha256', secret).update(body).digest());
 
-  // Compare in constant time, but only once the lengths agree - timingSafeEqual
-  // throws on a mismatch and that would turn a bad token into a 500.
+  // Constant-time compare, but only once the lengths agree - timingSafeEqual
+  // throws on a mismatch, which would turn a bad token into a 500.
   const a = Buffer.from(given);
   const b = Buffer.from(expect);
   if (a.length !== b.length) return null;
