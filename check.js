@@ -1,5 +1,4 @@
-import crypto from 'node:crypto';
-import { unseal } from './send.js';
+import { unseal } from '../lib/seal.js';
 
 /* Step 2: hand the code the visitor typed to got-beamed and report what it says.
 
@@ -30,11 +29,9 @@ export default async function handler(req, res) {
       body: JSON.stringify({ otp: code })
     });
     const data = await r.json();
-    if (!data.success) {
-      return res.json({ ok: false, error: data.error || 'Wrong code' });
-    }
+    if (!data.success) return res.json({ ok: false, error: data.error || 'Wrong code' });
     return res.json({ ok: true });
   } catch (e) {
-    return res.status(502).json({ error: 'API unreachable' });
+    return res.status(502).json({ error: 'API unreachable', detail: String((e && e.message) || e) });
   }
 }

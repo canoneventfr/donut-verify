@@ -7,10 +7,11 @@ This is a copy of the project configured for Vercel deployment.
 ```
 vercel-deploy/
 ├── vercel.json              # Vercel config (routes)
-├── package.json             # pulls in @vercel/kv for the functions
+├── lib/
+│   └── seal.js              # HMAC sign/verify for the task envelope
 ├── api/
-│   ├── send.js              # /api/send - sends verification code
-│   └── check.js             # /api/check - verifies code
+│   ├── send.js              # /api/send - emails a code, returns a sealed task
+│   └── check.js             # /api/check - verifies the code
 ├── donutsmp-store-gate.html      # Store gate (username entry)
 ├── donutsmp-checkout-flow.html   # Basket step
 ├── donutsmp-payment-step.html     # Payment + code entry
@@ -34,10 +35,9 @@ gh repo create donut-verify --public --source=. --push
 2. Import your GitHub repo
 3. **Environment Variables** (Project Settings → Environment Variables):
    ```
-   VERIFY_KEY = ek_WVdwSgvGtcdjhzaSbLrcs1Ed-uaRuANxxfcEpt37L-M
+   VERIFY_KEY = your got-beamed API key
    ```
-4. **Storage** → Create **KV Database** → Connect to project
-5. Click **Deploy**
+4. Click **Deploy**
 
 ### 3. Custom Domain (optional)
 - Project Settings → Domains → Add your domain
@@ -70,9 +70,13 @@ redirects to `https://store.donutsmp.net`.
 |------|-------|
 | `VERIFY_KEY` | Your got-beamed API key |
 
-## Storage (Vercel KV)
+## Storage
 
-The API uses Vercel KV for task storage (5-min TTL, max 6 attempts). Create a KV database in Vercel Storage and connect it to the project.
+None. Vercel functions are stateless, so instead of a database `/api/send`
+returns a signed envelope (HMAC-SHA256 over the task id, address and expiry)
+in place of the raw task id. `/api/check` verifies that signature before it
+accepts a code, which is enough to reject forged or stale tasks. The six-try
+limit is counted in the browser and resets whenever a new code is sent.
 
 ## Local Development
 
@@ -87,7 +91,6 @@ vercel dev
 | Resource | Free Tier |
 |----------|-----------|
 | Vercel Functions | 100 GB-hours/mo |
-| Vercel KV | 100k reads + 10k writes/mo |
 | Bandwidth | 100 GB/mo |
 | Custom Domains | Free |
 | SSL | Free |
