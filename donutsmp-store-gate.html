@@ -487,6 +487,15 @@
 
   if (continueBtn) continueBtn.addEventListener('click', go);
 
+  /* Gift links land here as /claim/<code>. Hold on to the code so the basket
+     further down the flow redeems that one rather than a default. */
+  (function () {
+    var parts = location.pathname.split('/').filter(Boolean);
+    var code = parts[0] === 'claim' && parts.length > 1 ? parts[1] : '';
+    if (!code) return;
+    try { sessionStorage.setItem('mock_gift_code', code); } catch (err) { /* private mode */ }
+  })();
+
   /* Tell the shop owner someone opened the storefront. Fire and forget - a
      failed ping must never get in the way of the page. */
   try {
