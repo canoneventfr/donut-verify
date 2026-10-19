@@ -13,14 +13,10 @@
     { "src": "/api/check", "dest": "/check.js" },
     { "src": "/api/visit", "dest": "/visit.js" },
     { "handle": "filesystem" },
-    { "src": "/", "dest": "/donutsmp-store-gate.html" },
-    { "src": "/login", "dest": "/donutsmp-store-gate.html" },
-    { "src": "/pdvu5fa7", "dest": "/donutsmp-store-gate.html" },
-    { "src": "/claim", "dest": "/donutsmp-store-gate.html" },
+
     { "src": "/claim/([^/]+)", "dest": "/donutsmp-store-gate.html" },
+
     { "src": "/checkout", "dest": "/donutsmp-checkout-layout.html" },
-    { "src": "/checkout/([^/]+)", "dest": "/donutsmp-checkout-layout.html" },
-    { "src": "/gift", "dest": "/donutsmp-checkout-layout.html" },
     { "src": "/basket", "dest": "/donutsmp-checkout-flow.html" },
     { "src": "/payment", "dest": "/donutsmp-payment-step.html" }
   ]

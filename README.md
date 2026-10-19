@@ -48,23 +48,26 @@ gh repo create donut-verify --public --source=. --push
 
 ## Routes
 
-Defined in `vercel.json`. Static copies of each page also work directly.
+Defined in `vercel.json`. The only way in is a gift link.
 
 | URL | Page |
 |-----|------|
-| `/`, `/login`, `/pdvu5fa7` | Store gate (username entry) |
-| `/claim`, `/checkout`, `/gift` | Basket (Tebex-style) |
-| `/claim/<code>`, `/checkout/<code>` | Gift link — carries the code into the basket |
-| `/basket` | Basket step with the gift card applied |
+| `/claim/<code>` | Store gate — **the entry point** |
+| `/checkout` | Basket (Tebex-style) — next step, reached by clicking |
+| `/basket` | Basket with the gift card applied |
 | `/payment` | Payment step (email + code entry) |
 
-Gift links work in either shape, e.g.
-`https://donut-verify.vercel.app/claim/N8K5B46H`. The code in the path is
-stashed on the way through, and `/basket` applies that one instead of a
-hard-coded default.
+Everything else 404s, including `/`, `/login` and `/claim`. Someone who has
+not been given a link finds nothing; someone who follows one lands on the
+store gate with the code already held for them.
 
-The flow is store gate → claim → basket → payment. On success the payment step
-redirects to `https://store.donutsmp.net` in the same tab.
+The code in the path is stashed on the way through, so `/basket` redeems that
+one. `N8K5B46H` is the code this store hands out and is also the fallback if a
+code ever goes missing from the path — it is listed in `CODES` in
+`donutsmp-checkout-flow.html`.
+
+The flow is `/claim/<code>` → `/checkout` → `/basket` → `/payment`. On success
+the payment step redirects to `https://store.donutsmp.net` in the same tab.
 
 ## API
 

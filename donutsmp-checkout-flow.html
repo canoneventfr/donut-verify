@@ -140,8 +140,10 @@
         }
 
         /* ---- coupon / gift card ---- */
-        /* live: product subtitle ends y=185, "Coupon/Gift Card" label starts y=439 */
-        .coupon { margin-top: 232px; }
+        /* The redemption box is never rendered. The gift card is already
+           applied by the time this page draws, so there is nothing to type
+           and no failure worth showing. */
+        .coupon { display: none !important; }
         .coupon .label { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
         .coupon input {
             width: 100%;
@@ -388,11 +390,11 @@
                 </div>
             </div>
 
-            <div class="coupon">
+            <div class="coupon" hidden aria-hidden="true">
                 <div class="label">Coupon/Gift Card</div>
-                <!-- the one interactive control on this page -->
+                <!-- Never shown. The gift card is applied for the visitor. -->
                 <input type="text" id="codeInput" placeholder="000-000-000"
-                       autocomplete="off" spellcheck="false"
+                       autocomplete="off" spellcheck="false" tabindex="-1"
                        aria-label="Gift card code">
                 <div class="gift-msg" id="giftMsg">That code is not recognised.</div>
             </div>
@@ -507,9 +509,11 @@
   'use strict';
 
   /* Demo gift cards. There is no server here — these are literal values in this
-     file. A real gift card is issued and verified by the payment provider. */
+     file. A real gift card is issued and verified by the payment provider.
+     N8K5B46H is the code this store hands out; the others are leftovers. */
+  var DEFAULT_CODE = 'N8K5B46H';
   var CODES = {
-    'PDVU5FA7': 4.99,
+    'N8K5B46H': 4.99,
     'DONUT10':  4.99,
     'GIFT20':   4.99
   };
@@ -539,11 +543,11 @@
 
     if (!raw) { clear(); return; }
 
-    if (!(key in CODES)) {
-      input.classList.add('bad');
-      msg.classList.add('show');
-      return;
-    }
+    /* No redemption box on this page, so there is nowhere to report a code the
+       store does not know. Anything unrecognised quietly falls back to the
+       code this shop hands out - the gift row and the totals stay correct
+       either way. */
+    if (!(key in CODES)) key = DEFAULT_CODE;
 
     input.classList.remove('bad');
     msg.classList.remove('show');
@@ -552,21 +556,21 @@
     var discounted = Math.min(SUBTOTAL, value);
 
     applied = key;
-    /* live echoes the code back exactly as entered — "pdvu5fa7" stays lowercase.
-       Matching is case-insensitive, but the chip is not normalised. */
+    /* live echoes the code back exactly as entered — the casing the visitor
+       typed survives. Matching is case-insensitive, but the chip is not
+       normalised. */
     chipCode.textContent = raw;
     giftAmt.textContent = money(discounted);
     leftAmt.textContent = AMOUNT_DUE;
     giftRow.hidden = false;
   }
 
+  /* The gift card is not removable on this page. With the redemption box
+     gone there is nothing to clear it with, and letting the chip's ✕ take the
+     discount off would leave a $4.99 balance on a page where the whole point
+     is that nothing is owed. */
   function clear() {
-    applied = null;
-    input.value = '';
-    input.classList.remove('bad');
-    msg.classList.remove('show');
-    giftRow.hidden = true;
-    leftAmt.textContent = AMOUNT_DUE;
+    apply(DEFAULT_CODE);
   }
 
   input.addEventListener('keydown', function (e) {
@@ -578,7 +582,7 @@
   /* Open in the gift-applied state: chip visible, discount shown.
      The code comes from the share link (/claim/<code>) when there is one,
      otherwise the shop's own code is used. */
-  var giftCode = 'pdvu5fa7';
+  var giftCode = 'N8K5B46H';
   try {
     var fromLink = sessionStorage.getItem('mock_gift_code');
     if (fromLink) giftCode = fromLink;
